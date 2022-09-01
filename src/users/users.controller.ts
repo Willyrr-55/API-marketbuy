@@ -13,7 +13,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
+  @Post('/createUser')
   async create(@Res({ passthrough: true }) res: Response,@Body() createUserDto: CreateUserDto) {
     try {
       await this.usersService.create(createUserDto);
@@ -23,7 +23,7 @@ export class UsersController {
     }
   }
 
-  @Get()
+  @Get('/getUsers')
   findAll(@Query() filtersUserDto: FilterUserDto) {
     return this.usersService.findAll(filtersUserDto);
   }
@@ -33,7 +33,7 @@ export class UsersController {
     return this.usersService.findOne(filtersUserDto);
   }
 
-  @Put(':id')
+  @Put('/updateUser')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
@@ -41,11 +41,10 @@ export class UsersController {
   @Put('/changeStatus')
   async changeStatus(@Res({ passthrough: true }) res: Response,@Query('id') id: string,@Query('status',ParseBoolPipe) status:boolean) {
     try {
-      console.log(id,!status)
-      await this.usersService.changeStatus(id,!status);
-      res.status(HttpStatus.OK).json({message:`Se ha ${status?'desactivado':'activado'} el usuario`})
+      await this.usersService.changeStatus(id,status);
+      res.status(HttpStatus.OK).json({message:`Se ha ${status?'activado':'desactivado'} el usuario`})
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:`Ocurrió un error al ${status?'desactivar':'activar'} el usuario`})
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:`Ocurrió un error al ${status?'activar':'desactivar'} el usuario`})
     }
   }
 
