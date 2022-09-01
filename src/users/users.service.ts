@@ -22,23 +22,43 @@ export class UsersService {
   }
 
   async findAll(filterUserDto:FilterUserDto): Promise<User[]>{
+    const query = [];
+
+    if(filterUserDto._id){
+      query.push({_id:filterUserDto._id});
+    }
+
+    if(filterUserDto.email){
+      query.push({email:new RegExp(filterUserDto.email,'i')});
+    }
+
+    if(filterUserDto.full_name){
+      query.push({full_name:new RegExp(filterUserDto.full_name,'i')});
+    }
+
     return this.userModel.find({
-      $or:[
-        {_id:filterUserDto._id},
-        {full_name:new RegExp(filterUserDto.full_name,'i')},
-        {email:new RegExp(filterUserDto.email,'i')}
-      ]
+      $or:query
     }).exec();
   }
 
   async findOne(filterUserDto:FilterUserDto): Promise<User>{
+    const query = [];
+
+    if(filterUserDto._id){
+      query.push({_id:filterUserDto._id});
+    }
+
+    if(filterUserDto.email){
+      query.push({email:new RegExp(filterUserDto.email,'i')});
+    }
+
+    if(filterUserDto.full_name){
+      query.push({full_name:new RegExp(filterUserDto.full_name,'i')});
+    }
+
     return this.userModel.findOne(
       {
-        $or:[
-          {_id:filterUserDto._id},
-          {full_name:new RegExp(filterUserDto.full_name,'i')},
-          {email:new RegExp(filterUserDto.email,'i')}
-        ]
+        $or:query
       }
     ).exec();
   }

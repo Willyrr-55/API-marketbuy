@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param,Put, HttpStatus, Res, Query, ParseBoolPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body,Put, HttpStatus, Res, Query, ParseBoolPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,6 +7,7 @@ import { Response } from 'express';
 import { LoginDto } from './dto/log-in.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { SignUpDto } from './dto/sign-up.dto';
+import { ParseIdPipe } from '../utilities/parse-id.pipe';
 
 @Controller('users')
 @ApiTags('User')
@@ -34,12 +35,18 @@ export class UsersController {
   }
 
   @Put('/updateUser')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  async update(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
+    try {
+      await this.usersService.update(id, updateUserDto);
+
+      res.status(HttpStatus.OK).json({message:`Se ha actualizado el usuario`})
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:`Ocurrió un error al actualizar el usuario`})
+    }
   }
 
   @Put('/changeStatus')
-  async changeStatus(@Res({ passthrough: true }) res: Response,@Query('id') id: string,@Query('status',ParseBoolPipe) status:boolean) {
+  async changeStatus(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string,@Query('status',ParseBoolPipe) status:boolean) {
     try {
       await this.usersService.changeStatus(id,status);
       res.status(HttpStatus.OK).json({message:`Se ha ${status?'activado':'desactivado'} el usuario`})
