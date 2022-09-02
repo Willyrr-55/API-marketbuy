@@ -39,13 +39,13 @@ export class ProductService {
       query.push({name:new RegExp(filterProductDto.name,'i')});
     }
 
-    if(filterProductDto.category){
-      query.push({name:new RegExp(filterProductDto.category,'i')});
-    }
+    // if(filterProductDto.category){
+    //   query.push({name:new RegExp(filterProductDto.category,'i')});
+    // }
 
-    if(filterProductDto.brand){
-      query.push({name:new RegExp(filterProductDto.brand,'i')});
-    }
+    // if(filterProductDto.brand){
+    //   query.push({name:new RegExp(filterProductDto.brand,'i')});
+    // }
 
     return this.productModel.find({
       $or:query

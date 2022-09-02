@@ -1,19 +1,24 @@
-import { Controller, Get, Post, Body,Put, HttpStatus, Res, Query, ParseBoolPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body,Put, HttpStatus, Res, Query, ParseBoolPipe, UseGuards, SetMetadata } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { LoginDto } from './dto/log-in.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { ParseIdPipe } from '../utilities/parse-id.pipe';
+import { JwtGuard } from 'src/guards/jwt.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
 
 @Controller('users')
 @ApiTags('User')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin'])
   @Post('/createUser')
   async create(@Res({ passthrough: true }) res: Response,@Body() createUserDto: CreateUserDto) {
     try {
@@ -24,16 +29,25 @@ export class UsersController {
     }
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin'])
   @Get('/getUsers')
   findAll(@Query() filtersUserDto: FilterUserDto) {
     return this.usersService.findAll(filtersUserDto);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin','user'])
   @Get('/detailUser')
   findOne(@Query() filtersUserDto: FilterUserDto) {
     return this.usersService.findOne(filtersUserDto);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin','user'])
   @Put('/updateUser')
   async update(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
     try {
@@ -45,6 +59,9 @@ export class UsersController {
     }
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin'])
   @Put('/changeStatus')
   async changeStatus(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string,@Query('status',ParseBoolPipe) status:boolean) {
     try {

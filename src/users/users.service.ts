@@ -99,4 +99,9 @@ export class UsersService {
   async generateToken(payload:any){
     return this.jwtService.sign(payload)
   }
+
+  async decodeToken(token:string){
+    const decode = await this.jwtService.verify(token);
+    return decode;
+  };
 }

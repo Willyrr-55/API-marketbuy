@@ -10,6 +10,14 @@ async function bootstrap() {
   .setTitle('MarketBuy Api')
   .setDescription('API REST del e-commerce MarketBuy')
   .setVersion('1.0')
+  .addBasicAuth({
+    type:'http',
+    scheme:'bearer',
+    bearerFormat:'JWT',
+    name:'JWT',
+    description:'Enter JWT token',
+    in:'header'
+  },'JWT-auth')
   .build();
 
   const document = SwaggerModule.createDocument(app,options);

@@ -11,7 +11,7 @@ import config from 'src/config';
     MongooseModule.forFeature([{name:User.name,schema:UserSchema}]),
     JwtModule.register({
       secret:config.SECRETJWT,
-      signOptions:{expiresIn:3600}
+      signOptions:{expiresIn:'1h'}
     })
   ],
   controllers: [UsersController],

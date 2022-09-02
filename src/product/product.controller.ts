@@ -1,19 +1,24 @@
-import { Controller, Get, Post, Body,Put, HttpStatus, Res, Query, ParseBoolPipe, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body,Put, HttpStatus, Res, Query, ParseBoolPipe, Param, UseGuards, Req, SetMetadata } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Response,Request } from 'express';
 import { ParseIdPipe } from '../utilities/parse-id.pipe';
 import { FilterProductDto } from './dto/filter-product.dto';
+import { JwtGuard } from '../guards/jwt.guard';
+import { RolesGuard } from '../guards/roles.guard';
 
 @Controller('product')
-@ApiTags('product')
+@ApiTags('Product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin'])
   @Post('/createProduct')
-  async create( @Res({ passthrough: true }) res: Response, @Body() createProductDto: CreateProductDto) {
+  async create(@Req() req: Request, @Res({ passthrough: true }) res: Response, @Body() createProductDto: CreateProductDto) {
     try {
       await this.productService.create(createProductDto);
       res.status(HttpStatus.OK).json({message:'El producto ha sido creado'})
@@ -22,6 +27,7 @@ export class ProductController {
     }
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Get('/getProducts')
   findAll() {
     return this.productService.findAll();
@@ -37,6 +43,9 @@ export class ProductController {
     return this.productService.filterProduct(filterProductDto);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin'])
   @Put('/updateProduct')
   async update(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string, @Body() updateProductDto: UpdateProductDto) {
     try {
@@ -48,6 +57,9 @@ export class ProductController {
     }
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin'])
   @Put('/changeStatus')
   async changeStatus(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string,@Query('status',ParseBoolPipe) status:boolean) {
     try {
