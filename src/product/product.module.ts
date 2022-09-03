@@ -13,6 +13,7 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthModule
   ],
   controllers: [ProductController],
-  providers: [ProductService]
+  providers: [ProductService],
+  exports:[ProductService,CloudinaryModule]
 })
 export class ProductModule {}

@@ -6,6 +6,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { Product, ProductDocument } from './schemas/product.schema';
 import { CloudinaryService } from '../cloudinary/cloudinary/cloudinary.service';
+import { ProductToOrderI } from '../order/interfaces/product-to-order.interface';
 
 @Injectable()
 export class ProductService {
@@ -70,5 +71,17 @@ export class ProductService {
     );
     
     return urlImages;
+  }
+
+  async getProductsByIds(ids:string[]){
+    return this.productModel.find({_id:{$in:ids}}).exec();
+  }
+
+  async changeStockProducts(products:ProductToOrderI[]){
+    return Promise.all(
+      products.map((p)=>{
+        return this.productModel.updateOne({_id:p.idProduct},{$inc:{stock:-p.quantity}})
+      })
+    )
   }
 }

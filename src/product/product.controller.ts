@@ -29,7 +29,6 @@ export class ProductController {
     @UploadedFiles() files: Array<Express.Multer.File>) {
     try {
 
-      
       const images = await this.productService.updateImages(files);
       
       const photosToProduct = images.map((img)=>{
