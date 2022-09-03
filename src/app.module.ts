@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { BrandModule } from './brand/brand.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { BrandModule } from './brand/brand.module';
     MongooseModule.forRoot(`mongodb+srv://${config.MONGO_ATLAS_USER}:${config.MONGO_ATLAS_PASS}@cluster0.lcaax.mongodb.net/marketbuyDB?retryWrites=true&w=majority`),
     ProductModule,
     CategoryModule,
-    BrandModule
+    BrandModule,
+    OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],

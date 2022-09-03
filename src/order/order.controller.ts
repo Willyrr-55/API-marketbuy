@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Param, Res, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Res, HttpStatus, Put, UseGuards, SetMetadata } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { JwtGuard } from 'src/guards/jwt.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
 
 @Controller('order')
 @ApiTags('Order')
@@ -26,6 +28,9 @@ export class OrderController {
   }
 
   @Get('/getOrders')
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin','user'])
   async findAll(@Res({passthrough:true})res :Response) {
     try {
       const orders = await this.orderService.findAll();
@@ -55,6 +60,9 @@ export class OrderController {
    }
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin'])
   @Put('/updateOrder/:id')
   async update(@Res({passthrough:true})res :Response, @Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     try {

@@ -1,5 +1,5 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNotEmpty, MinLength } from "class-validator";
+import { ArrayMinSize, IsArray, IsNotEmpty } from "class-validator";
 import { ProductOrder } from '../classes/product-order.class'
 import { ProductToOrderI } from '../interfaces/product-to-order.interface';
 
@@ -46,7 +46,7 @@ export class CreateOrderDto {
 
     @ApiProperty({type:[ProductOrder]})
     @IsArray()
-    @MinLength(1,{message:'Ingrese al menos un producto'})
+    @ArrayMinSize(1,{message:'Ingrese al menos un producto'})
     products:ProductOrder[] | ProductToOrderI[]
 
     @ApiHideProperty()
