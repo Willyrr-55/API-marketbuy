@@ -15,6 +15,7 @@ import config from 'src/config';
     })
   ],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService],
+  exports:[UsersService,JwtModule]
 })
 export class UsersModule {}

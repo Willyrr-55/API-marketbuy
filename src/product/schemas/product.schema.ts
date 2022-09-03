@@ -1,5 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { PhotoProductI } from '../interfaces/photo-product.interface';
 
 export type ProductDocument = Product & Document; 
 
@@ -11,9 +12,9 @@ export class Product {
 
     @Prop({required:true})
     description: string;
-
+    
     @Prop({required: false})
-    img: string[];
+    photos: PhotoProductI[];
 
     @Prop({required:true})
     price: number;

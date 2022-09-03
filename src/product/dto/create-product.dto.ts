@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsNotEmpty, IsNumber } from "class-validator";
+import { IsNotEmpty} from "class-validator";
+import { PhotoProductI } from '../interfaces/photo-product.interface';
 
 export class CreateProductDto {
     @ApiProperty({example: 'Bocina xb1'})
@@ -10,19 +11,18 @@ export class CreateProductDto {
     @IsNotEmpty({message:'La descripcion es requerido'})
     description: string;
 
-    // @ApiProperty({example: 'bosina.jpg'})
-    // @IsNotEmpty({message:'La imagen es requerido'})
-    // img: string;
+    @ApiProperty({type: 'array', required: true,items:{type:'string',format:'binary'}})
+    files: Express.Multer.File[];
 
     @ApiProperty({example: 49.90})
     @IsNotEmpty({message:'El precio es requerido'})
-    @IsNumber()
     price: number;
 
     @ApiProperty({example: 100})
     @IsNotEmpty({message:'El stock es requerido'})
-    @IsInt()
     stock: number;
+
+    photos:PhotoProductI[]
 
     // @ApiProperty({example: '11025784'})
     // @IsNotEmpty({message:'La categoria es requerido'})

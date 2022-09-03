@@ -5,11 +5,12 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { Product, ProductDocument } from './schemas/product.schema';
+import { CloudinaryService } from '../cloudinary/cloudinary/cloudinary.service';
 
 @Injectable()
 export class ProductService {
 
-  constructor(@InjectModel(Product.name) private readonly productModel:Model<ProductDocument>){}
+  constructor(@InjectModel(Product.name) private readonly productModel:Model<ProductDocument>,private cloudinaryService: CloudinaryService){}
 
 
   async create(createProductDto: CreateProductDto) {
@@ -62,4 +63,12 @@ export class ProductService {
     return this.productModel.findOneAndUpdate({_id:id},{$set:{status}})
   }
 
+
+  async updateImages(images:Express.Multer.File[]){
+    const urlImages = await Promise.all(
+      images.map((file)=>this.cloudinaryService.uploadImage(file))
+    );
+    
+    return urlImages;
+  }
 }
