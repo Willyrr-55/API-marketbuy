@@ -28,7 +28,6 @@ export class ProductController {
     @Body(new ParseFormDataJsonPipe({except:['files']}),new ValidationPipe()) createProductDto: CreateProductDto,
     @UploadedFiles() files: Array<Express.Multer.File>) {
     try {
-
       
       const images = await this.productService.updateImages(files);
       

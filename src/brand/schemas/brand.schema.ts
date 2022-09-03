@@ -14,6 +14,15 @@ export class Brand {
 
     @Prop({default:true})
     status: boolean;
+
+    @Prop({required:false})
+    photo: PhotoI[];
+}
+
+export interface PhotoI {
+    asset_id:string,
+    public_id:string,
+    url:string
 }
 
 export const BrandSchema = SchemaFactory.createForClass(Brand);

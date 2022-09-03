@@ -14,6 +14,15 @@ export class Category {
 
     @Prop({default:true})
     status: boolean;
+
+    @Prop({required:true})
+    photo: Photo[];
+}
+
+interface Photo {
+    asset_id:string,
+    public_id:string,
+    url:string
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

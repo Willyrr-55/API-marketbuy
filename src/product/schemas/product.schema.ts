@@ -1,5 +1,7 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { Brand } from 'src/brand/schemas/brand.schema';
+import { Category } from 'src/category/schemas/category.schema';
 import { PhotoProductI } from '../interfaces/photo-product.interface';
 
 export type ProductDocument = Product & Document; 
@@ -22,11 +24,11 @@ export class Product {
     @Prop({required:true})
     stock: number;
 
-    // @Prop({required:true,type: mongoose.Schema.Types.ObjectId,ref:'Category'})
-    // category:Category;
+    @Prop({required:true,type: mongoose.Schema.Types.ObjectId,ref:'Category'})
+    category:Category;
 
-    // @Prop({required:true,type: mongoose.Schema.Types.ObjectId, ref: 'Brand', autopopulate: true})
-    // brand:Brand;
+    @Prop({required:true,type: mongoose.Schema.Types.ObjectId, ref: 'Brand', autopopulate: true})
+    brand:Brand;
 
     @Prop({default:true})
     status: boolean;
