@@ -19,11 +19,11 @@ export class ProductService {
   }
 
   async findAll(): Promise<Product[]> {
-    return this.productModel.find();
+    return this.productModel.find().populate('category').populate('brand');
   }
 
   async findOne(id: string): Promise<Product> {
-    return this.productModel.findOne({_id: { $in: id }});
+    return this.productModel.findOne({_id: { $in: id }}).populate('category').populate('brand');;
   }
 
   async filterProduct(filterProductDto:FilterProductDto): Promise<Product[]>{
@@ -51,7 +51,7 @@ export class ProductService {
 
     return this.productModel.find({
       $or:query
-    }).exec();
+    }).populate('category').populate('brand').exec();
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {

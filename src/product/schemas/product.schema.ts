@@ -27,7 +27,7 @@ export class Product {
     @Prop({required:true,type: mongoose.Schema.Types.ObjectId,ref:'Category'})
     category:Category;
 
-    @Prop({required:true,type: mongoose.Schema.Types.ObjectId, ref: 'Brand', autopopulate: true})
+    @Prop({required:true,type: mongoose.Schema.Types.ObjectId, ref: 'Brand'})
     brand:Brand;
 
     @Prop({default:true})

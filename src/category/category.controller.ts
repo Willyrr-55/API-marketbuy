@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, SetMetadata, UseInterceptors, Req, ValidationPipe, Res, UploadedFiles, HttpStatus,  Put, Query, ParseBoolPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body,Param, UseGuards, SetMetadata, UseInterceptors, Req, ValidationPipe, Res, UploadedFiles, HttpStatus,  Put, Query, ParseBoolPipe } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from 'src/guards/jwt.guard';
