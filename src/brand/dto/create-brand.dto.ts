@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { PhotoI } from '../schemas/brand.schema';
+import { PhotoI } from 'src/interfaces/photo.interface';
 
 export class CreateBrandDto {
   @ApiProperty({ example: 'Apple'})

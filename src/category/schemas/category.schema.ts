@@ -1,5 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import { Document } from 'mongoose';
+import { PhotoI } from 'src/interfaces/photo.interface';
 
 export type CategoryDocument = Category & Document; 
 
@@ -16,13 +17,7 @@ export class Category {
     status: boolean;
 
     @Prop({required:true})
-    photo: Photo[];
-}
-
-interface Photo {
-    asset_id:string,
-    public_id:string,
-    url:string
+    photo: PhotoI[];
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

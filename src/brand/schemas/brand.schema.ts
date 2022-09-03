@@ -1,5 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import { Document } from 'mongoose';
+import { PhotoI } from 'src/interfaces/photo.interface';
 
 export type BrandDocument = Brand & Document; 
 
@@ -17,12 +18,6 @@ export class Brand {
 
     @Prop({required:false})
     photo: PhotoI[];
-}
-
-export interface PhotoI {
-    asset_id:string,
-    public_id:string,
-    url:string
 }
 
 export const BrandSchema = SchemaFactory.createForClass(Brand);

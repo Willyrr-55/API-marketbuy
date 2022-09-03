@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty} from "class-validator";
-import { PhotoProductI } from '../interfaces/photo-product.interface';
+import { IsMongoId, IsNotEmpty} from "class-validator";
+import { PhotoI } from 'src/interfaces/photo.interface';
 
 export class CreateProductDto {
     @ApiProperty({example: 'Bocina xb1'})
@@ -22,13 +22,15 @@ export class CreateProductDto {
     @IsNotEmpty({message:'El stock es requerido'})
     stock: number;
 
-    photos:PhotoProductI[]
+    photos:PhotoI[]
 
-    // @ApiProperty({example: '11025784'})
-    // @IsNotEmpty({message:'La categoria es requerido'})
-    // category: string
+    @ApiProperty({example: '6313a10044f8b363d9df30b2'})
+    @IsNotEmpty({message:'La categoria es requerido'})
+    @IsMongoId({message:'El ID del mongo es inválido'})
+    category: string
 
-    // @ApiProperty({example: '10879662'})
-    // @IsNotEmpty({message:'La marca es requerido'})
-    // brand: string;
+    @ApiProperty({example: '6313a2088afab084c523d7df'})
+    @IsNotEmpty({message:'La marca es requerido'})
+    @IsMongoId({message:'El ID del mongo es inválido'})
+    brand: string;
 }

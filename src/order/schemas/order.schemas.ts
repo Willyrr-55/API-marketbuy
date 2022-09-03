@@ -6,40 +6,43 @@ export type OrderDocument = Order & Document;
 @Schema()
 export class Order {
 
-    @Prop()
+    @Prop({required:true})
     names:string;
 
-    @Prop()
+    @Prop({required:true})
     last_name:string;
 
-    @Prop()
+    @Prop({required:true})
+    email:string;
+
+    @Prop({required:true})
     phone:string;
 
-    @Prop()
+    @Prop({required:true})
     address:string;
 
-    @Prop()
+    @Prop({required:true})
     department:string;
 
-    @Prop()
+    @Prop({required:true})
     municipality:string;
 
-    @Prop()
+    @Prop({required:false,default:null})
     aditional_info:string;
 
-    @Prop()
+    @Prop({required:true})
     card_number:string;
 
-    @Prop()
+    @Prop({required:true})
     expiration_date:string;
 
-    @Prop()
+    @Prop({required:true})
     cvv:string;
 
-    @Prop()
+    @Prop({required:true})
     products:ProductToOrderI[]
 
-    @Prop()
+    @Prop({required:true})
     total:number;
 }
 
