@@ -15,11 +15,11 @@ export class FilterProductDto{
     @IsOptional()
     readonly name?:string;
 
-    @ApiProperty({example:'technology',required:false})
+    @ApiProperty({example:'6313a10044f8b363d9df30b2',required:false})
     @IsOptional()
     readonly category?:string;
 
-    @ApiProperty({example:'sony',required:false})
+    @ApiProperty({example:'6313a2088afab084c523d7df',required:false})
     @IsOptional()
     readonly brand?:string;
 }

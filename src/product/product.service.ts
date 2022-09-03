@@ -7,6 +7,7 @@ import { FilterProductDto } from './dto/filter-product.dto';
 import { Product, ProductDocument } from './schemas/product.schema';
 import { CloudinaryService } from '../cloudinary/cloudinary/cloudinary.service';
 import { ProductToOrderI } from '../order/interfaces/product-to-order.interface';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class ProductService {
@@ -41,13 +42,13 @@ export class ProductService {
       query.push({name:new RegExp(filterProductDto.name,'i')});
     }
 
-    // if(filterProductDto.category){
-    //   query.push({name:new RegExp(filterProductDto.category,'i')});
-    // }
+    if(mongoose.isValidObjectId(filterProductDto.category)){
+      query.push({category:filterProductDto.category});
+    }
 
-    // if(filterProductDto.brand){
-    //   query.push({name:new RegExp(filterProductDto.brand,'i')});
-    // }
+    if(mongoose.isValidObjectId(filterProductDto.brand)){
+      query.push({brand:filterProductDto.brand});
+    }
 
     return this.productModel.find({
       $or:query

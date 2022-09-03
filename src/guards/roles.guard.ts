@@ -14,7 +14,7 @@ export class RolesGuard implements CanActivate {
 
     const roleUser = req.user.role;
 
-    if(validRoles.includes(roleUser)){
+    if(validRoles?.includes(roleUser)){
       return true;
     }else{
       throw new BadRequestException({message:'Operación no permitida para este rol'})
