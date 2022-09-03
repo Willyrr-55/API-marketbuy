@@ -3,15 +3,16 @@ import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from './schemas/product.schema';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { User, UserSchema } from 'src/users/schemas/user.schema';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports:[
-    MongooseModule.forFeature([{name:Product.name,schema:ProductSchema},{name:User.name,schema:UserSchema}])
+    MongooseModule.forFeature([{name:Product.name,schema:ProductSchema}]),
+    CloudinaryModule,
+    AuthModule
   ],
   controllers: [ProductController],
-  providers: [ProductService,JwtService,UsersService]
+  providers: [ProductService]
 })
 export class ProductModule {}

@@ -1,13 +1,15 @@
-import { Controller, Get, Post, Body,Put, HttpStatus, Res, Query, ParseBoolPipe, Param, UseGuards, Req, SetMetadata } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, HttpStatus, Res, Query, ParseBoolPipe, Param, UseGuards, Req, SetMetadata, UseInterceptors, UploadedFiles, ValidationPipe } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Response,Request } from 'express';
 import { ParseIdPipe } from '../utilities/parse-id.pipe';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/roles.guard';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { ParseFormDataJsonPipe } from '../pipes/parse-form-data-json.pipe';
 
 @Controller('product')
 @ApiTags('Product')
@@ -17,12 +19,27 @@ export class ProductController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtGuard,RolesGuard)
   @SetMetadata('roles',['admin'])
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FilesInterceptor('files',5))
   @Post('/createProduct')
-  async create(@Req() req: Request, @Res({ passthrough: true }) res: Response, @Body() createProductDto: CreateProductDto) {
+  async create(
+    @Req() req: Request, 
+    @Res({ passthrough: true }) res: Response, 
+    @Body(new ParseFormDataJsonPipe({except:['files']}),new ValidationPipe()) createProductDto: CreateProductDto,
+    @UploadedFiles() files: Array<Express.Multer.File>) {
     try {
-      await this.productService.create(createProductDto);
+
+      
+      const images = await this.productService.updateImages(files);
+      
+      const photosToProduct = images.map((img)=>{
+        return {public_id:img.public_id,url:img.url,asset_id:img.asset_id}
+      });
+      
+      await this.productService.create({...createProductDto,photos:photosToProduct});
       res.status(HttpStatus.OK).json({message:'El producto ha sido creado'})
     } catch (error) {
+      console.log(error)
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:'Ocurrió un error al crear el producto'})
     }
   }
