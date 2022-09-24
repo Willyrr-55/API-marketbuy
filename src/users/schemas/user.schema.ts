@@ -1,5 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { ExcludeProperty } from 'nestjs-mongoose-exclude';
 
 export type UserDocument = User & Document; 
 
@@ -16,6 +17,7 @@ export class User {
     phone_number:string;
 
     @Prop({required:true})
+    @ExcludeProperty()
     password:string;
 
     @Prop({default:true})
