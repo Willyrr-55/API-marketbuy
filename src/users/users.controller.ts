@@ -102,7 +102,8 @@ export class UsersController {
 
       res.status(HttpStatus.OK).json({
         message:'Has iniciado sesión correctamente',
-        token
+        token,
+        user
       });
     } catch (error) {
       console.log(error)
