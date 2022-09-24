@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body,Put, HttpStatus, Res, Query, ParseBoolPipe, UseGuards, SetMetadata } from '@nestjs/common';
+import { Controller, Get, Post, Body,Put, HttpStatus, Res, Query, ParseBoolPipe, UseGuards, SetMetadata, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,6 +10,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { ParseIdPipe } from '../utilities/parse-id.pipe';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
+import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 
 @Controller('users')
 @ApiTags('User')
@@ -32,6 +33,7 @@ export class UsersController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtGuard,RolesGuard)
   @SetMetadata('roles',['admin'])
+  @UseInterceptors(new SanitizeMongooseModelInterceptor())
   @Get('/getUsers')
   findAll(@Query() filtersUserDto: FilterUserDto) {
     return this.usersService.findAll(filtersUserDto);
@@ -114,7 +116,7 @@ export class UsersController {
       const user = await this.usersService.signUp(createUserDto);
 
       const token = await this.usersService.generateToken({_id:user['_id'],role:user.role});
-      res.status(HttpStatus.OK).json({message:'Te has registrado correctamente',token})
+      res.status(HttpStatus.OK).json({message:'Te has registrado correctamente',token,user})
     } catch (error) {
       console.log(error)
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:'Ocurrió un error al crear el usuario'})
