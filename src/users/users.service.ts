@@ -13,7 +13,10 @@ import { SignUpDto } from './dto/sign-up.dto';
 @Injectable()
 export class UsersService {
 
-  constructor(@InjectModel(User.name) private readonly userModel:Model<UserDocument>,private jwtService: JwtService){}
+  constructor(
+    @InjectModel(User.name) private readonly userModel:Model<UserDocument>,
+    private jwtService: JwtService
+    ){}
 
   async create(createUserDto: CreateUserDto): Promise<User>{
     const passwordHashed = await this.hasPassword(createUserDto.password);
