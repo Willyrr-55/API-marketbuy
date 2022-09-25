@@ -12,10 +12,10 @@ import { UsersService } from 'src/users/users.service';
 export class WishlistController {
   constructor(private readonly wishlistService: WishlistService, private usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createWishlistDto: CreateWishlistDto) {
-    return this.wishlistService.create(createWishlistDto);
-  }
+  // @Post()
+  // create(@Body() createWishlistDto: CreateWishlistDto) {
+  //   return this.wishlistService.create(createWishlistDto);
+  // }
 
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtGuard)
@@ -31,9 +31,9 @@ export class WishlistController {
       // console.log(userId)
 
       const user = await this.usersService.findOne(userId);
-      console.log(user)
+      
       const { productId } = createWishlistDto;
-      console.log(productId )
+      
 
       const wish = await this.wishlistService.findOne(user.wishlistId);
       
@@ -43,20 +43,21 @@ export class WishlistController {
                     message:'Este producto ya esta en tu lista de Favoritos'
                 })
             }
+            
+            // await this.wishlistService.addProductToWishlist({productIds:productId, userId});
             (wish.productIds as any).push(productId)
-            await this.wishlistService.addProductToWishlist({...createWishlistDto});
+            await wish.save()
             return res.status(200).json({
                 ok:true,
                 message:'El producto se agrego a tu wishlist'
                 })
         }
-      // console.log(1);
-      // console.log(createWishlistDto)
-     
-      res.status(HttpStatus.OK).json({message:'El producto se agrego a tu wishlist'});
+
+      await this.wishlistService.createWishlist({productIds:productId, userId})
+      res.status(HttpStatus.OK).json({message:'El producto se agrego a tu wishlist'})
     } catch (error) {
       console.log(error)
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:'Ocurrió un error al crear el producto'});
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:'Ocurrió un error al agregar el producto a tu Wishlist'});
     }
   }
 
