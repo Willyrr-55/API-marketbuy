@@ -50,8 +50,11 @@ export class ProductController {
   }
 
   @Get('/getProduct/:id')
-  findOne(@Param('id') id: string) {
-    return this.productService.findOne(id);
+  async findOne(@Res({ passthrough: true })res: Response, @Param('id') id: string) {
+    // console.log(id)
+    const product = await this.productService.findOne(id)
+    // console.log(product)
+    return {product:product};
   }
 
   @Get('/filterProducts')
