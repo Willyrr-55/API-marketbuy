@@ -79,6 +79,7 @@ export class ProductController {
   @Put('/changeStatus')
   async changeStatus(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string,@Query('status',ParseBoolPipe) status:boolean) {
     try {
+      console.log(id)
       await this.productService.changeStatus(id,status);
       res.status(HttpStatus.OK).json({message:`Se ha ${status?'activado':'desactivado'} el producto`})
     } catch (error) {

@@ -105,9 +105,33 @@ export class BrandController {
   async changeStatus(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string,@Query('status',ParseBoolPipe) status:boolean) {
     try {
       await this.brandService.changeStatus(id,status);
-      res.status(HttpStatus.OK).json({message:`Se ha ${status?'activado':'desactivado'} la categoria`})
+      res.status(HttpStatus.OK).json({message:`Se ha ${status?'activado':'desactivado'} la marca`})
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:`Ocurrió un error al ${status?'activar':'desactivar'} la categoria`})
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:`Ocurrió un error al ${status?'activar':'desactivar'} la marca`})
     }
   }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin'])
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FilesInterceptor('files',2))
+  @Put('/changePhoto')
+  async changePhoto(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string, @UploadedFiles() files: Array<Express.Multer.File>) {
+    try {
+      console .log(files)
+      const images = await this.brandService.updateImage(files);
+
+      const photoToBrand = images.map((img)=>{
+        return {public_id:img.public_id,url:img.url,asset_id:img.asset_id}
+      });
+
+      await this.brandService.updateBrandPhoto(id,photoToBrand[0]);
+
+      res.status(HttpStatus.OK).json({message:`Se ha actualizado la imagen de la marca`, photo: photoToBrand[0]})
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:`Ocurrió un error al actualizar la imagen de la marca`})
+    }
+  }
+
 }

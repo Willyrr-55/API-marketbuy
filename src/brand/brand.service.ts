@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CloudinaryService } from 'src/cloudinary/cloudinary/cloudinary.service';
+import { PhotoI } from 'src/interfaces/photo.interface';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand, BrandDocument } from './schemas/brand.schema';
@@ -25,6 +26,12 @@ export class BrandService {
 
   async update(id: string, updateBrandDto: UpdateBrandDto) {
     return this.brandModel.findOneAndUpdate({_id:id},updateBrandDto,{
+      new:true
+    });
+  }
+
+  async updateBrandPhoto(id: string, photo: PhotoI) {
+    return this.brandModel.findOneAndUpdate({_id:id},{photo:photo},{
       new:true
     });
   }

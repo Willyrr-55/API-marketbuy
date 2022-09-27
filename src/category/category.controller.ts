@@ -9,6 +9,7 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ParseIdPipe } from 'src/utilities/parse-id.pipe';
+import { FilterCategoryDto } from './dto/filter-category.dto';
 
 @Controller('category')
 @ApiTags('Category')
@@ -56,9 +57,13 @@ export class CategoryController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtGuard,RolesGuard)
   @SetMetadata('roles',['admin'])
+
   @Put('/updateCategory')
-  async update(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
+  async update(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string, 
+                @Body() updateCategoryDto: UpdateCategoryDto)
+  {
     try {
+
       await this.categoryService.update(id, updateCategoryDto);
 
       res.status(HttpStatus.OK).json({message:`Se ha actualizado la categoria`})
@@ -71,7 +76,7 @@ export class CategoryController {
   @UseGuards(JwtGuard,RolesGuard)
   @SetMetadata('roles',['admin'])
   @Put('/changeStatus')
-  async changeStatus(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string,@Query('status',ParseBoolPipe) status:boolean) {
+  async changeStatus(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string,@Query('status',ParseBoolPipe) status:boolean,) {
     try {
       await this.categoryService.changeStatus(id,status);
       res.status(HttpStatus.OK).json({message:`Se ha ${status?'activado':'desactivado'} la categoria`})
@@ -79,6 +84,39 @@ export class CategoryController {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:`Ocurrió un error al ${status?'activar':'desactivar'} la categoria`})
     }
   }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard,RolesGuard)
+  @SetMetadata('roles',['admin'])
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FilesInterceptor('files',2))
+  @Put('/changePhoto')
+  async changePhoto(@Res({ passthrough: true }) res: Response,@Query('id',ParseIdPipe) id: string, @UploadedFiles() files: Array<Express.Multer.File>) {
+    try {
+      console .log(files)
+      const images = await this.categoryService.updateImage(files);
+
+      const photoToBrand = images.map((img)=>{
+        return {public_id:img.public_id,url:img.url,asset_id:img.asset_id}
+      });
+
+      await this.categoryService.updatecategoryPhoto(id,photoToBrand[0]);
+
+      res.status(HttpStatus.OK).json({message:`Se ha actualizado la imagen de la categoria`, photo: photoToBrand[0]})
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:`Ocurrió un error al actualizar la imagen de la categoria`})
+    }
+  }
+
+  @Get('/filterCategories')
+  filterProducts(@Query() filterCategoryDto: FilterCategoryDto) {
+    console.log('status',filterCategoryDto.status)
+    console.log('name',filterCategoryDto.name)
+    console.log('id',filterCategoryDto._id)
+    console.log('description',filterCategoryDto.description)
+    return this.categoryService.filterCategory(filterCategoryDto);
+  }
+
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {
