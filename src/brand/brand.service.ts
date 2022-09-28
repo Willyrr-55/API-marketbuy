@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { CloudinaryService } from 'src/cloudinary/cloudinary/cloudinary.service';
 import { PhotoI } from 'src/interfaces/photo.interface';
 import { CreateBrandDto } from './dto/create-brand.dto';
+import { FilterBrandDto } from './dto/filter-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand, BrandDocument } from './schemas/brand.schema';
 
@@ -51,4 +52,56 @@ export class BrandService {
   async changeStatus(id: string,status:boolean) {
     return this.brandModel.findOneAndUpdate({_id:id},{$set:{status}})
   }
+
+  async filterBrand(filterBrandDto:FilterBrandDto): Promise<Brand[]>{
+    const query = [];
+
+    if(filterBrandDto._id){
+      query.push({_id:filterBrandDto._id});
+    }
+
+
+    if(filterBrandDto.name){
+      query.push({name:new RegExp(filterBrandDto.name,'i')});
+    }
+
+    if(filterBrandDto.description){
+      query.push({description:new RegExp(filterBrandDto.description,'i')});
+    }
+
+    if(filterBrandDto.status){
+      query.push({status: filterBrandDto.status});
+    }
+
+
+    let brand 
+    if(query.length>0){
+      let status
+      query.map( q =>{
+        if(q.status != undefined) {
+          status = q.status
+        }
+      } )
+
+      if(status != undefined){
+        brand = this.brandModel.find({
+          $and: [{
+            $and: [query[0]]
+          }, {
+            $and: [{status: status}]
+          }]
+        })
+
+      }else {
+        brand = this.brandModel.find({
+          $or:query
+        })
+      }
+    }else {
+      brand = this.brandModel.find()
+    }
+
+    return brand
+  }
+
 }

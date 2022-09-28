@@ -29,6 +29,7 @@ import { JwtGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { ParseFormDataJsonPipe } from 'src/pipes/parse-form-data-json.pipe';
 import { ParseIdPipe } from 'src/utilities/parse-id.pipe';
+import { FilterBrandDto } from './dto/filter-brand.dto';
 
 @Controller('brand')
 @ApiTags('Brand')
@@ -133,5 +134,11 @@ export class BrandController {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:`Ocurrió un error al actualizar la imagen de la marca`})
     }
   }
+
+  @Get('/filterBrands')
+  filterbrands(@Query() filterBrandDto: FilterBrandDto) {
+    return this.brandService.filterBrand(filterBrandDto);
+  }
+
 
 }
