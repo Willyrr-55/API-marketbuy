@@ -109,11 +109,7 @@ export class CategoryController {
   }
 
   @Get('/filterCategories')
-  filterProducts(@Query() filterCategoryDto: FilterCategoryDto) {
-    console.log('status',filterCategoryDto.status)
-    console.log('name',filterCategoryDto.name)
-    console.log('id',filterCategoryDto._id)
-    console.log('description',filterCategoryDto.description)
+  filterCategories(@Query() filterCategoryDto: FilterCategoryDto) {
     return this.categoryService.filterCategory(filterCategoryDto);
   }
 
