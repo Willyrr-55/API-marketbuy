@@ -23,7 +23,7 @@ export class CategoryService {
   }
 
   async findAll(): Promise <Category[]> {
-    return this.categoryModel.find();
+    return this.categoryModel.find({status: true});
   }
 
   async findOne(id: string): Promise <Category> {

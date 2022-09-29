@@ -18,7 +18,7 @@ export class BrandService {
   }
 
   async findAll(): Promise <Brand[]> {
-    return this.brandModel.find();
+    return this.brandModel.find({status: true});
   }
 
   async findOne(id: string): Promise <Brand> {
