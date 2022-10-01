@@ -43,12 +43,13 @@ export class ProductController {
     }
   }
 
-  @ApiBearerAuth('JWT-auth')
   @Get('/getProducts')
   findAll() {
     return this.productService.findAll();
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard)
   @Get('/getProduct/:id')
   async findOne(@Res({ passthrough: true })res: Response, @Param('id') id: string) {
     // console.log(id)

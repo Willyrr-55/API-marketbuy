@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body,Put, HttpStatus, Res, Query, ParseBoolPipe, UseGuards, SetMetadata, UseInterceptors } from '@nestjs/common';
+import { JwtToRefreshGuard } from './../guards/jwt-to-refresh.guard';
+import { Controller, Get, Post, Body,Put, HttpStatus, Res,Req, Query, ParseBoolPipe, UseGuards, SetMetadata, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Response,Request } from 'express';
 import { LoginDto } from './dto/log-in.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -121,6 +122,25 @@ export class UsersController {
     } catch (error) {
       console.log(error)
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:'Ocurrió un error al crear el usuario'})
+    }
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtToRefreshGuard)
+  @Get('/renew')
+  async revalidarToken(@Res({ passthrough: true }) res: Response,@Req() req:Response){
+    try {
+      const user =  req['user']
+      const token = await this.usersService.revalidarToken(user._id);
+      res.json({
+        ok:true,
+        token
+      })
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        ok:false,
+        message:'Ocurrio un error al revalidar el token'
+      })
     }
   }
 }

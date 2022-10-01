@@ -107,4 +107,10 @@ export class UsersService {
     const decode = await this.jwtService.verify(token);
     return decode;
   };
+
+  async revalidarToken (userId) {
+    const user = await this.findOne(userId);
+    const token = await this.generateToken({_id:user['_id'],role:user.role});
+    return token;
+  }
 }
