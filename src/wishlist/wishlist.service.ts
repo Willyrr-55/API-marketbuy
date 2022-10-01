@@ -22,6 +22,10 @@ export class WishlistService {
     return ;
   }
 
+  findWishlistWithProducts(id: any){
+    return this.wishModel.findById(id).populate({path:'productIds', populate:{path:'category'}});
+  }
+
   addProductToWishlist(data:any) {
     return 'This action adds a new wishlist';
   }

@@ -10,7 +10,7 @@ import { ProductToOrderI } from '../order/interfaces/product-to-order.interface'
 import mongoose from 'mongoose';
 
 @Injectable()
-export class ProductService {
+export class ProductService { 
 
   constructor(@InjectModel(Product.name) private readonly productModel:Model<ProductDocument>,private cloudinaryService: CloudinaryService){}
 
