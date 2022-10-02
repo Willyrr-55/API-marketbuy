@@ -96,21 +96,23 @@ export class WishlistController {
 
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtGuard)
-  @Delete('removeProductToWishlist')
+  @Delete('removeProductToWishlist/:id')
   async removeProductTo(
     @Req() req: Request, 
-    @Res() res: Response, 
-    @Body() createWishlistDto: CreateWishlistDto,
+    @Res() res: Response,
     @Param('id') id: string) {
       try {
 
-          const { productId } = createWishlistDto;
+          const productId  = id;
           const userId = req['user']['_id'];
           const user = await this.usersService.findOne(userId);
           const wish = await this.wishlistService.findWishlistWithProducts(user.wishlistId);
+        
+          wish.productIds = (wish.productIds as any).filter((product)=>{
+            
+            return product?._id.toString() != productId
+          });
           
-          wish.productIds = (wish.productIds as any).filter((product)=>product != productId);
-          console.log(wish.productIds)
           await wish.save();
           return res.json({ 
               message:'El producto se eliminó de tu wishlist'

@@ -71,14 +71,15 @@ let WishlistController = class WishlistController {
     update(id, updateWishlistDto) {
         return this.wishlistService.update(+id, updateWishlistDto);
     }
-    async removeProductTo(req, res, createWishlistDto, id) {
+    async removeProductTo(req, res, id) {
         try {
-            const { productId } = createWishlistDto;
+            const productId = id;
             const userId = req['user']['_id'];
             const user = await this.usersService.findOne(userId);
             const wish = await this.wishlistService.findWishlistWithProducts(user.wishlistId);
-            wish.productIds = wish.productIds.filter((product) => product != productId);
-            console.log(wish.productIds);
+            wish.productIds = wish.productIds.filter((product) => {
+                return (product === null || product === void 0 ? void 0 : product._id.toString()) != productId;
+            });
             await wish.save();
             return res.json({
                 message: 'El producto se eliminó de tu wishlist'
@@ -140,13 +141,12 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiBearerAuth)('JWT-auth'),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
-    (0, common_1.Delete)('removeProductToWishlist'),
+    (0, common_1.Delete)('removeProductToWishlist/:id'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Res)()),
-    __param(2, (0, common_1.Body)()),
-    __param(3, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, create_wishlist_dto_1.CreateWishlistDto, String]),
+    __metadata("design:paramtypes", [Object, Object, String]),
     __metadata("design:returntype", Promise)
 ], WishlistController.prototype, "removeProductTo", null);
 __decorate([

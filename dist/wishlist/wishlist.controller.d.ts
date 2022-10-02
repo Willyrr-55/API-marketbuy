@@ -39,6 +39,6 @@ export declare class WishlistController {
         _id: import("mongoose").Types.ObjectId;
     }>;
     update(id: string, updateWishlistDto: UpdateWishlistDto): string;
-    removeProductTo(req: Request, res: Response, createWishlistDto: CreateWishlistDto, id: string): Promise<string | Response<any, Record<string, any>>>;
+    removeProductTo(req: Request, res: Response, id: string): Promise<string | Response<any, Record<string, any>>>;
     remove(id: string): string;
 }
