@@ -23,7 +23,7 @@ async function bootstrap() {
     swagger_1.SwaggerModule.setup('docs', app, document);
     app.useGlobalPipes(new common_1.ValidationPipe());
     app.enableCors();
-    await app.listen(3000);
+    await app.listen(process.env.PORT);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
