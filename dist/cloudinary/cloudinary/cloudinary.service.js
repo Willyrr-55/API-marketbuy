@@ -9,7 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CloudinaryService = void 0;
 const common_1 = require("@nestjs/common");
 const cloudinary_1 = require("cloudinary");
-const buffer_to_stream_1 = require("buffer-to-stream");
+const stream_1 = require("stream");
 let CloudinaryService = class CloudinaryService {
     async uploadImage(file) {
         return new Promise((resolve, reject) => {
@@ -18,8 +18,32 @@ let CloudinaryService = class CloudinaryService {
                     return reject(error);
                 resolve(result);
             });
-            (0, buffer_to_stream_1.convert)(file.buffer).pipe(upload);
+            this.convert(file.buffer).pipe(upload);
         });
+    }
+    convert(buf, chunkSize) {
+        if (typeof buf === 'string') {
+            buf = Buffer.from(buf, 'utf8');
+        }
+        if (!Buffer.isBuffer(buf)) {
+            throw new TypeError(`"buf" argument must be a string or an instance of Buffer`);
+        }
+        const reader = new stream_1.Readable();
+        const hwm = reader._readableState.highWaterMark;
+        if (!chunkSize || typeof chunkSize !== 'number' || chunkSize < 1 || chunkSize > hwm) {
+            chunkSize = hwm;
+        }
+        const len = buf.length;
+        let start = 0;
+        reader._read = function () {
+            while (reader.push(buf.slice(start, (start += chunkSize)))) {
+                if (start >= len) {
+                    reader.push(null);
+                    break;
+                }
+            }
+        };
+        return reader;
     }
 };
 CloudinaryService = __decorate([
