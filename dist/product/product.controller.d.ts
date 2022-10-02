@@ -4,6 +4,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Response, Request } from 'express';
 import { FilterProductDto } from './dto/filter-product.dto';
+import { PhotoI } from 'src/interfaces/photo.interface';
 export declare class ProductController {
     private readonly productService;
     constructor(productService: ProductService);
@@ -15,4 +16,6 @@ export declare class ProductController {
     filterProducts(filterProductDto: FilterProductDto): Promise<import("./schemas/product.schema").Product[]>;
     update(res: Response, id: string, updateProductDto: UpdateProductDto): Promise<void>;
     changeStatus(res: Response, id: string, status: boolean): Promise<void>;
+    changePhoto(res: Response, id: string, files: Array<Express.Multer.File>): Promise<void>;
+    deletePhoto(res: Response, id: string, photo: PhotoI): Promise<void>;
 }

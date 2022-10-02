@@ -24,6 +24,7 @@ const jwt_guard_1 = require("../guards/jwt.guard");
 const roles_guard_1 = require("../guards/roles.guard");
 const platform_express_1 = require("@nestjs/platform-express");
 const parse_form_data_json_pipe_1 = require("../pipes/parse-form-data-json.pipe");
+const photo_interface_1 = require("../interfaces/photo.interface");
 let ProductController = class ProductController {
     constructor(productService) {
         this.productService = productService;
@@ -54,6 +55,7 @@ let ProductController = class ProductController {
     }
     async update(res, id, updateProductDto) {
         try {
+            console.log(id);
             await this.productService.update(id, updateProductDto);
             res.status(common_1.HttpStatus.OK).json({ message: `Se ha actualizado el producto` });
         }
@@ -69,6 +71,30 @@ let ProductController = class ProductController {
         }
         catch (error) {
             res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Ocurrió un error al ${status ? 'activar' : 'desactivar'} el producto` });
+        }
+    }
+    async changePhoto(res, id, files) {
+        try {
+            console.log(files);
+            const images = await this.productService.updateImages(files);
+            const photoToProduct = images.map((img) => {
+                return { public_id: img.public_id, url: img.url, asset_id: img.asset_id };
+            });
+            let product = await this.productService.addPhoto(id, photoToProduct[0]);
+            res.status(common_1.HttpStatus.OK).json({ message: `Se ha agregado la imagen al produdcto`, product: product });
+        }
+        catch (error) {
+            res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Ocurrió un error al agregar l aimagen al prodcuto` });
+        }
+    }
+    async deletePhoto(res, id, photo) {
+        try {
+            console.log(photo);
+            let product = await this.productService.deletePhoto(id, photo);
+            res.status(common_1.HttpStatus.OK).json({ message: `Se ha eliminado la imagen al producto`, product: product });
+        }
+        catch (error) {
+            res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Ocurrió un error al eliminado l imagen al producto` });
         }
     }
 };
@@ -115,7 +141,7 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)('JWT-auth'),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
     (0, common_1.SetMetadata)('roles', ['admin']),
-    (0, common_1.Put)('/updateProduct'),
+    (0, common_1.Put)('/updatePro'),
     __param(0, (0, common_1.Res)({ passthrough: true })),
     __param(1, (0, common_1.Query)('id', parse_id_pipe_1.ParseIdPipe)),
     __param(2, (0, common_1.Body)()),
@@ -135,6 +161,32 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, Boolean]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "changeStatus", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('JWT-auth'),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
+    (0, common_1.SetMetadata)('roles', ['admin']),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 1)),
+    (0, common_1.Put)('/addPhoto'),
+    __param(0, (0, common_1.Res)({ passthrough: true })),
+    __param(1, (0, common_1.Query)('id', parse_id_pipe_1.ParseIdPipe)),
+    __param(2, (0, common_1.UploadedFiles)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Array]),
+    __metadata("design:returntype", Promise)
+], ProductController.prototype, "changePhoto", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('JWT-auth'),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
+    (0, common_1.SetMetadata)('roles', ['admin']),
+    (0, common_1.Put)('/deletePhoto'),
+    __param(0, (0, common_1.Res)({ passthrough: true })),
+    __param(1, (0, common_1.Query)('id', parse_id_pipe_1.ParseIdPipe)),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:returntype", Promise)
+], ProductController.prototype, "deletePhoto", null);
 ProductController = __decorate([
     (0, common_1.Controller)('product'),
     (0, swagger_1.ApiTags)('Product'),

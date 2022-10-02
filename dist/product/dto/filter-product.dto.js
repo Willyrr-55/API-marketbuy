@@ -40,5 +40,10 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], FilterProductDto.prototype, "brand", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, required: false }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], FilterProductDto.prototype, "status", void 0);
 exports.FilterProductDto = FilterProductDto;
 //# sourceMappingURL=filter-product.dto.js.map

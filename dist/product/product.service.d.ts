@@ -7,6 +7,7 @@ import { Product, ProductDocument } from './schemas/product.schema';
 import { CloudinaryService } from '../cloudinary/cloudinary/cloudinary.service';
 import { ProductToOrderI } from '../order/interfaces/product-to-order.interface';
 import mongoose from 'mongoose';
+import { PhotoI } from 'src/interfaces/photo.interface';
 export declare class ProductService {
     private readonly productModel;
     private cloudinaryService;
@@ -28,4 +29,10 @@ export declare class ProductService {
         _id: mongoose.Types.ObjectId;
     })[]>;
     changeStockProducts(products: ProductToOrderI[]): Promise<import("mongodb").UpdateResult[]>;
+    addPhoto(id: string, photo: PhotoI): Promise<Product & mongoose.Document<any, any, any> & {
+        _id: mongoose.Types.ObjectId;
+    }>;
+    deletePhoto(id: string, photo: PhotoI): Promise<Product & mongoose.Document<any, any, any> & {
+        _id: mongoose.Types.ObjectId;
+    }>;
 }

@@ -4,4 +4,5 @@ export declare class FilterProductDto {
     readonly name?: string;
     readonly category?: string;
     readonly brand?: string;
+    readonly status?: boolean;
 }
