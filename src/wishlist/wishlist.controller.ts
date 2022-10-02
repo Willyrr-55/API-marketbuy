@@ -33,7 +33,6 @@ export class WishlistController {
       const user = await this.usersService.findOne(userId);
       
       const { productId } = createWishlistDto;
-      
 
       const wish = await this.wishlistService.findOne(user.wishlistId);
       
@@ -93,6 +92,35 @@ export class WishlistController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateWishlistDto: UpdateWishlistDto) {
     return this.wishlistService.update(+id, updateWishlistDto);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtGuard)
+  @Delete('removeProductToWishlist')
+  async removeProductTo(
+    @Req() req: Request, 
+    @Res() res: Response, 
+    @Body() createWishlistDto: CreateWishlistDto,
+    @Param('id') id: string) {
+      try {
+
+          const { productId } = createWishlistDto;
+          const userId = req['user']['_id'];
+          const user = await this.usersService.findOne(userId);
+          const wish = await this.wishlistService.findWishlistWithProducts(user.wishlistId);
+          
+          wish.productIds = (wish.productIds as any).filter((product)=>product != productId);
+          console.log(wish.productIds)
+          await wish.save();
+          return res.json({ 
+              message:'El producto se eliminó de tu wishlist'
+          })
+      } catch (error) {
+        console.log(error)
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:'Ocurrió un error al eliminar el producto de tu wishlist'});
+      }
+
+    return this.wishlistService.remove(+id);
   }
 
   @Delete(':id')
