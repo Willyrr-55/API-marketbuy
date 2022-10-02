@@ -22,4 +22,8 @@ export class FilterProductDto{
     @ApiProperty({example:'6313a2088afab084c523d7df',required:false})
     @IsOptional()
     readonly brand?:string;
+
+    @ApiProperty({example: true,required:false})
+    @IsOptional()
+    readonly status?:boolean;
 }
