@@ -8,6 +8,7 @@ import { Product, ProductDocument } from './schemas/product.schema';
 import { CloudinaryService } from '../cloudinary/cloudinary/cloudinary.service';
 import { ProductToOrderI } from '../order/interfaces/product-to-order.interface';
 import mongoose from 'mongoose';
+import { PhotoI } from 'src/interfaces/photo.interface';
 
 @Injectable()
 export class ProductService { 
@@ -28,31 +29,135 @@ export class ProductService {
   }
 
   async filterProduct(filterProductDto:FilterProductDto): Promise<Product[]>{
-    const query = [];
+    console.log(filterProductDto)
+    // eslint-disable-next-line prefer-const
+    let query = [];
+    let category 
+    let brand
 
     if(filterProductDto._id){
       query.push({_id:filterProductDto._id});
     }
 
-    if(filterProductDto.stock){
-      query.push({stock: filterProductDto.stock });
+   if(filterProductDto.stock){
+    if(filterProductDto.stock == 1){
+      console.log('mayor')
+      query.push({stock: {$gt:1} });
+    } else if(filterProductDto.stock == 0){
+      console.log('menor')
+      query.push({stock:  { $lt : 1 }});
+
     }
+   }
 
     if(filterProductDto.name){
       query.push({name:new RegExp(filterProductDto.name,'i')});
     }
 
     if(mongoose.isValidObjectId(filterProductDto.category)){
+      category = {category:filterProductDto.category}
       query.push({category:filterProductDto.category});
     }
 
     if(mongoose.isValidObjectId(filterProductDto.brand)){
+      brand = {brand:filterProductDto.brand}
       query.push({brand:filterProductDto.brand});
     }
 
-    return this.productModel.find({
-      $or:query
-    }).populate('category').populate('brand').exec();
+    if(filterProductDto.status){
+      query.push({status:filterProductDto.status});
+    }
+
+
+    
+    let product 
+    if(query.length>=2){
+      let status
+      let stock
+      let positionstatus = 0
+      let positionStock = 0
+      query.map( q =>{
+        if(q.status != undefined) {
+          positionstatus = positionstatus + 1
+          status = q.status
+        }
+        if(q.stock != undefined) {
+          stock = q.stock
+          positionStock = positionStock + 1
+        }
+      } )
+
+      // query = query.slice(0, 1)
+
+      if(status != undefined && stock != undefined){
+        product = this.productModel.find({
+          $and: [
+            {
+             $and: query
+            }, 
+            {
+              $and: [{status: status}]
+            },
+            {
+              $and: [{stock: stock}]
+            }
+        ]
+        }).populate('category').populate('brand').exec()
+        return product
+      }
+
+      if(status != undefined){
+        product = this.productModel.find({
+          $and: [{
+            $and: query
+          }, {
+            $and: [{status: status}]
+          }]
+        }).populate('category').populate('brand').exec()
+        return product
+      }
+
+      if(stock != undefined){
+        product = this.productModel.find({
+          $and: [
+            {
+             query
+            }, 
+            {
+              stock: stock
+            }
+        ]
+        }).populate('category').populate('brand').exec()
+        return product
+      }
+      if(category && brand){
+        product = this.productModel.find({
+          $and: [
+            {
+             $and: [category]
+            }, 
+            {
+              $and: [brand]
+            },
+        ]
+        }).populate('category').populate('brand').exec()
+        return product
+      }
+    
+      product = this.productModel.find({
+          $or:query
+        }).populate('category').populate('brand').exec()
+      return product
+    }else if(query.length == 1){
+      product = this.productModel.find({
+        $or:query
+      }).populate('category').populate('brand').exec()
+      return product
+    } else {
+        product = this.productModel.find().populate('category').populate('brand').exec()
+      return product
+    }
+    
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
@@ -84,5 +189,21 @@ export class ProductService {
         return this.productModel.updateOne({_id:p.idProduct},{$inc:{stock:-p.quantity}})
       })
     )
+  }
+
+  async addPhoto(id: string, photo: PhotoI){
+    return this.productModel.findOneAndUpdate({_id:id},{$addToSet:{photos:photo}},{
+      new:true
+    })
+  }
+
+  async deletePhoto(id: string, photo: PhotoI){
+
+    const producto = await this.productModel.findOne({$and:[{_id:id}]})
+    const newProducto = producto.photos.filter(p => p.url != photo.url) 
+
+    return this.productModel.findOneAndUpdate({_id:id},{photos: newProducto},{
+      new:true
+    })
   }
 }
